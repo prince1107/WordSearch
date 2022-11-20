@@ -3,6 +3,7 @@ package com.example.wordsearch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -26,6 +27,9 @@ public class HelloController {
 
     int length = 10;
     int height = 10;
+
+    private int selectedRow;
+    private int selectedColumn;
 
     int wordStartx = -1;
     int wordStarty = -1;
@@ -56,9 +60,12 @@ public class HelloController {
             @Override
             public void handle(ActionEvent event) {
                 //all code for the buttons goes here
-                checkWord();
+                selectedRow = GridPane.getRowIndex(((Button) event.getSource()));
+                selectedColumn = GridPane.getColumnIndex((Button) event.getSource());
+                checkWord(selectedRow, selectedColumn);
             }
         };
+
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < height; j++) {
                 btn[i][j].setOnAction(z);
@@ -82,8 +89,69 @@ public class HelloController {
         updateGraphics();
     }
 
-    private void checkWord() {
+    private void checkWord(int row, int col) {
+        System.out.println(col + ", " + row);
+        if (wordStartx == -1) {
+            wordStartx = col;
+            wordStarty = row;
+        } else if (wordEndx == -1) {
+            wordEndx = col;
+            wordEndy = row;
 
+            String word = "";
+
+            int changex = wordEndx - wordStartx;
+            int changey = wordEndy - wordStarty;
+            double eqchangex = 0;
+            double eqchangey = 0;
+            if (changey == 0) {
+                if (changex > 0) {
+                    eqchangex = 1;
+                } else {
+                    eqchangex = -1;
+                }
+                eqchangey = 0;
+            } else if (changex == 0) {
+                if (changey > 0) {
+                    eqchangey = 1;
+                } else {
+                    eqchangey = -1;
+                }
+                eqchangex = 0;
+            } else if (!(changex == 0 && changey == 0)) {
+                eqchangex = changex / changey;
+                eqchangey = changey / changex;
+            }
+
+
+            if (!(eqchangex == 1 || eqchangex == -1 || eqchangex == 0)) {
+                System.out.println("doesn't work");
+            } else if (!(eqchangey == 1 || eqchangey == -1 || eqchangey == 0)) {
+                System.out.println("doesn't work");
+            } else {
+                for (int i = 0; i <= Math.abs(changex); i++) {
+                    for (int j = 0; j <= Math.abs(changey); j++) {
+                        word += board[(int) (wordStarty + eqchangey * j)][(int) (wordStartx + eqchangex * i)];
+                        System.out.println();
+                    }
+                }
+            }
+
+            System.out.println(word);
+
+            for (String testword : testWords) {
+                if (testword.equals(word)) {
+                    System.out.println(testword);
+                    System.out.println(testword);
+                }
+            }
+            System.out.println();
+            wordStartx = -1;
+            wordStarty = -1;
+
+            wordEndx = -1;
+            wordEndy = -1;
+        }
     }
 
     private void finishWordSearch() {
@@ -128,7 +196,6 @@ public class HelloController {
                     //if it works store that direction in an array
                     if (directionWorks) {
                         directions.add(0);
-                        System.out.println("right");
                     }
                 }
             }
@@ -145,7 +212,6 @@ public class HelloController {
                     //if it works store that direction in an array
                     if (directionWorks) {
                         directions.add(1);
-                        System.out.println("down");
                     }
                 }
             }
@@ -188,7 +254,7 @@ public class HelloController {
         }while (!boardWorks && tryCount<10000);
         wordList.remove(0);
         if (tryCount >= 10000){
-            System.out.println("didn't work");
+//            System.out.println("didn't work");
         } else {
             if(directions.size()>0) {
                 int index = (int) (Math.random() * directions.size());
