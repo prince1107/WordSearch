@@ -1,19 +1,47 @@
 package com.example.wordsearch;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class HelloController {
-    Button[][] btn;
-    String[][] board;
-    private ArrayList<String> words = new ArrayList<> ();
+
+    @FXML
+    private ListView wordsView, leaderboardView;
+    private Button hardModeButton;
+    private Button generalWordsButton;
+    private Button spaceWordsButton;
+    private Button oceanWordsButton;
+    private Button easyModeButton;
+    private Button hackButton;
+    private Label timeLabel;
+    private Label modeLabel;
+    private Label themeLabel;
+    private Button mediumModeButton;
+    private Label nameLabel;
+    private TextField nameField;
+
+    private Button[][] btn;
+    private String[][] board;
+    private ArrayList<String> words = new ArrayList<>();
+    private ArrayList<String> dictionary = new ArrayList<>();
+
+    private ArrayList<String> leaderboardArray = new ArrayList<>();
+
     private ArrayList<Integer> directions = new ArrayList<>();
 
     @FXML
@@ -21,9 +49,10 @@ public class HelloController {
     @FXML
     private GridPane searchBoard;
 
-    private String[] testWords = {"come", "bell", "bear", "play", "sing", "bird", "bean", "game", "rice", "four", "five", "tree", "keep", "dark", "moon", "cool","mat", "bat", "tag", "bag", "fan", "man", "gas", "ram", "rat", "can", "tan", "mad", "bad", "sad"};
+    @FXML
+    private Label wordsLabel, leaderboardLabel;
 
-    private ArrayList<String> wordList = new ArrayList<>();
+    private ArrayList<String> searchWords = new ArrayList<>();
 
     int length = 10;
     int height = 10;
@@ -37,11 +66,43 @@ public class HelloController {
     int wordEndx = -1;
     int wordEndy = -1;
 
+    double mode = 1;
+
+    boolean hacked = false;
+
+    int score = 0;
+    Timer myTimer = new Timer();
+
+    int time = 0;
+
+    private String name = "player";
+
+
     @FXML
     protected void handleClickMe(ActionEvent event) {
-        for (String word: testWords) {
-            wordList.add(word);
+        dictionary.clear();
+        try{
+            FileReader reader = new FileReader("src/main/resources/com/example/wordsearch/words_alpha.txt");
+            Scanner in = new Scanner(reader);
+
+            while(in.hasNext()){
+                dictionary.add(in.next());
+            }
+
+        } catch (FileNotFoundException ex){
+            System.out.println("Something is very wrong");
         }
+
+        score = 0;
+
+        time = 0;
+
+        startTimer();
+
+        searchWords.clear();
+
+        int length = (int) (10 * mode);
+        int height = (int) (10 * mode);
 
         btn = new Button[length][height];
         board = new String[length][height];
@@ -80,7 +141,7 @@ public class HelloController {
         }
 
 
-        for (int r = 0; r < 30; r++) {
+        for (int r = 0; r < 8 * mode; r++) {
             fillWordSearch();
         }
 
@@ -89,14 +150,32 @@ public class HelloController {
         updateGraphics();
     }
 
+    private void startTimer() {
+        myTimer.scheduleAtFixedRate(new TimerTask(){
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        timeLabel.setText("Time: " + time + " seconds");
+                    }
+                });
+                System.out.println("Time: " + time + " seconds");
+                time++;
+            }
+        }, 0, 1000);
+    }
+
     private void checkWord(int row, int col) {
-        System.out.println(col + ", " + row);
+        timeLabel.setText("Time: " + time + " seconds");
         if (wordStartx == -1) {
             wordStartx = col;
             wordStarty = row;
         } else if (wordEndx == -1) {
             wordEndx = col;
             wordEndy = row;
+
+            System.out.println(wordStartx + " " + wordEndx);
+            System.out.println(wordStarty + " " + wordEndy);
 
             String word = "";
 
@@ -119,8 +198,8 @@ public class HelloController {
                 }
                 eqchangex = 0;
             } else if (!(changex == 0 && changey == 0)) {
-                eqchangex = changex / changey;
-                eqchangey = changey / changex;
+                eqchangex = changex / Math.abs(changey);
+                eqchangey = changey / Math.abs(changex);
             }
 
 
@@ -129,30 +208,65 @@ public class HelloController {
             } else if (!(eqchangey == 1 || eqchangey == -1 || eqchangey == 0)) {
                 System.out.println("doesn't work");
             } else {
-                for (int i = 0; i <= Math.abs(changex); i++) {
-                    for (int j = 0; j <= Math.abs(changey); j++) {
-                        word += board[(int) (wordStarty + eqchangey * j)][(int) (wordStartx + eqchangex * i)];
-                        System.out.println();
-                    }
+                for (int i = 0; i <= Math.max(Math.abs(changex), Math.abs(changey)); i++) {
+                        word += board[(int) (wordStarty + eqchangey * i)][(int) (wordStartx + eqchangex * i)];
                 }
             }
 
             System.out.println(word);
 
-            for (String testword : testWords) {
+            boolean wordInArray = false;
+
+            for (String testword : searchWords) {
                 if (testword.equals(word)) {
                     System.out.println(testword);
-                    System.out.println(testword);
+                    wordInArray = true;
+                    for (int i = 0; i <= Math.max(Math.abs(changex), Math.abs(changey)); i++) {
+                        btn[(int) (wordStarty + eqchangey * i)][(int) (wordStartx + eqchangex * i)].setStyle("-fx-background-color: #ffff00; ");
+                    }
                 }
             }
-            System.out.println();
-            wordStartx = -1;
-            wordStarty = -1;
+            
+            if (wordInArray) {
+                searchWords.remove(word);
+                updateGraphics();
+            } else if (dictionary.contains(word)) {
+                score += 50;
+                for (int i = 0; i <= Math.max(Math.abs(changex), Math.abs(changey)); i++) {
+                    btn[(int) (wordStarty + eqchangey * i)][(int) (wordStartx + eqchangex * i)].setStyle("-fx-background-color: #ffff00; ");
+                }
+            }
 
+            wordStartx = -1;
             wordEndx = -1;
-            wordEndy = -1;
+            System.out.println(wordStartx + " " + wordEndx);
         }
+        checkEnd();
     }
+
+    private void checkEnd() {
+        if (searchWords.size() == 0){
+            myTimer.cancel();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date date = new Date();
+            score += (500 - time) * 2 * mode;
+            String leaderboard = name + "; Date - " + formatter.format(date) +  " Score - " + score;
+
+            System.out.println(leaderboard);
+
+            try {
+                FileWriter output = new FileWriter("src/main/resources/com/example/wordsearch/output.txt", true);
+
+                output.write(leaderboard + "\n");
+                output.close();
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+        updateGraphics();
+    }
+
 
     private void finishWordSearch() {
         for (int i = 0; i < length; i++) {
@@ -179,9 +293,11 @@ public class HelloController {
             //get random start location
             rowStart = (int)(Math.random ()*btn.length);
             colStart = (int) (Math.random ()*btn.length);
-            System.out.println(colStart + ", " + rowStart);
-            //get the first word out of the arraylist
-            currentWord = wordList.get(0);
+
+            currentWord = words.get((int) (Math.random() * words.size()));
+            while (searchWords.contains(currentWord)){
+                currentWord = words.get((int) (Math.random() * words.size()));
+            }
             //check if start position is empty or equal to the first letter of the word
             if (board[rowStart][colStart].equals("_") || currentWord.substring(0,1).equals(board[rowStart][colStart])) {
                 //choose direction right check if their are enough buttons in that direction
@@ -247,50 +363,248 @@ public class HelloController {
                     }
                 }
             }
+
+            if (directions.contains(0) && directions.contains(1)) {
+                //choose direction down right check if their are enough buttons in that direction
+                if (board.length-colStart>=currentWord.length() && board.length-rowStart>=currentWord.length()){
+                    var directionWorks = true;
+                    //check if each letter of the word con go in the buttons in that direction
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        if (!(board[rowStart+i][colStart+i].equals(currentWord.substring(i, i + 1)) || board[rowStart+i][colStart+i].equals("_"))){
+                            directionWorks = false;
+                        }
+                    }
+                    //if it works store that direction in an array
+                    if (directionWorks) {
+                        directions.add(4);
+                    }
+                }
+            }
+
+            if (directions.contains(0) && directions.contains(3)) {
+                //choose direction down right check if their are enough buttons in that direction
+                if (board.length-colStart>=currentWord.length() && rowStart>=currentWord.length()){
+                    var directionWorks = true;
+                    //check if each letter of the word con go in the buttons in that direction
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        if (!(board[rowStart-i][colStart+i].equals(currentWord.substring(i, i + 1)) || board[rowStart-i][colStart+i].equals("_"))){
+                            directionWorks = false;
+                        }
+                    }
+                    //if it works store that direction in an array
+                    if (directionWorks) {
+                        directions.add(5);
+                    }
+                }
+            }
+
+            if (directions.contains(2) && directions.contains(1)) {
+                //choose direction down right check if their are enough buttons in that direction
+                if (colStart>=currentWord.length() && board.length-rowStart>=currentWord.length()){
+                    var directionWorks = true;
+                    //check if each letter of the word con go in the buttons in that direction
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        if (!(board[rowStart+i][colStart-i].equals(currentWord.substring(i, i + 1)) || board[rowStart+i][colStart-i].equals("_"))){
+                            directionWorks = false;
+                        }
+                    }
+                    //if it works store that direction in an array
+                    if (directionWorks) {
+                        directions.add(6);
+                    }
+                }
+            }
+
+            if (directions.contains(2) && directions.contains(1)) {
+                //choose direction down right check if their are enough buttons in that direction
+                if (colStart>=currentWord.length() && rowStart>=currentWord.length()){
+                    var directionWorks = true;
+                    //check if each letter of the word con go in the buttons in that direction
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        if (!(board[rowStart-i][colStart-i].equals(currentWord.substring(i, i + 1)) || board[rowStart-i][colStart-i].equals("_"))){
+                            directionWorks = false;
+                        }
+                    }
+                    //if it works store that direction in an array
+                    if (directionWorks) {
+                        directions.add(7);
+                    }
+                }
+            }
+
             if (directions.size()>0) {
                 boardWorks = true;
             }
             tryCount++;
         }while (!boardWorks && tryCount<10000);
-        wordList.remove(0);
+
         if (tryCount >= 10000){
-//            System.out.println("didn't work");
+            System.out.println(currentWord + " didn't work");
+            words.remove(currentWord);
         } else {
+            words.remove(currentWord);
             if(directions.size()>0) {
+                searchWords.add(currentWord);
                 int index = (int) (Math.random() * directions.size());
                 int directionUsed =  directions.get(index);
                 if (directionUsed == 0) {
                     for (int i = 0; i < currentWord.length(); i++) {
                         board[rowStart][colStart + i] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart][colStart + i].setStyle("-fx-background-color: #00ffff; ");
+                        }
                     }
                 }
                 else if (directionUsed == 1) {
                     for (int i = 0; i < currentWord.length(); i++) {
                         board[rowStart + i][colStart] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart + i][colStart].setStyle("-fx-background-color: #00ffff; ");
+                        }
                     }
                 }
                 else if (directionUsed == 2) {
                     for (int i = 0; i < currentWord.length(); i++) {
                         board[rowStart][colStart - i] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart][colStart - i].setStyle("-fx-background-color: #00ffff; ");
+                        }
                     }
                 }
                 else if (directionUsed == 3) {
                     for (int i = 0; i < currentWord.length(); i++) {
                         board[rowStart - i][colStart] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart - i][colStart].setStyle("-fx-background-color: #00ffff; ");
+                        }
+                    }
+                }
+                else if (directionUsed == 4) {
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        board[rowStart + i][colStart + i] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart + i][colStart + i].setStyle("-fx-background-color: #00ffff; ");
+                        }
+                    }
+                }
+                else if (directionUsed == 5) {
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        board[rowStart - i][colStart + i] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart - i][colStart + i].setStyle("-fx-background-color: #00ffff; ");
+                        }
+                    }
+                }
+                else if (directionUsed == 6) {
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        board[rowStart + i][colStart - i] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart + i][colStart - i].setStyle("-fx-background-color: #00ffff; ");
+                        }
+                    }
+                }
+                else if (directionUsed == 7) {
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        board[rowStart - i][colStart - i] = currentWord.substring(i, i + 1);
+                        if (hacked) {
+                            btn[rowStart - i][colStart - i].setStyle("-fx-background-color: #00ffff; ");
+                        }
                     }
                 }
             }
         }
-
+        updateGraphics();
     }
 
-    public void updateGraphics() {
+    protected void updateGraphics() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
                 btn[i][j].setText(board[i][j]);
             }
         }
+        wordsView.getItems().clear();
+        wordsView.getItems().addAll(searchWords);
+
+        leaderboardArray.clear();
+        try{
+            FileReader reader = new FileReader("src/main/resources/com/example/wordsearch/output.txt");
+            Scanner in = new Scanner(reader);
+
+            while(in.hasNext()){
+                leaderboardArray.add(in.nextLine());
+            }
+
+        } catch (FileNotFoundException ex){
+            System.out.println("Something is very wrong");
+        }
+
+        leaderboardView.getItems().clear();
+        leaderboardView.getItems().addAll(leaderboardArray);
     }
 
 
+    protected void handleModeHard() {
+        mode = 1.5;
+    }
+
+    protected void handleModeMedium() {
+        mode = 1;
+    }
+
+    protected void handleModeEasy() {
+        mode = 0.75;
+    }
+
+    protected void handleSetGeneralWords() {
+        words.clear();
+        try{
+            FileReader reader = new FileReader("src/main/resources/com/example/wordsearch/~1000CommonWords.txt");
+            Scanner in = new Scanner(reader);
+
+            while(in.hasNext()){
+                words.add(in.next());
+            }
+
+        } catch (FileNotFoundException ex){
+            System.out.println("Something is very wrong");
+        }
+    }
+
+    protected void handleSetSpaceWords() {
+        words.clear();
+        try{
+            FileReader reader = new FileReader("src/main/resources/com/example/wordsearch/SpaceWords.txt");
+            Scanner in = new Scanner(reader);
+
+            while(in.hasNext()){
+                words.add(in.next());
+            }
+
+        } catch (FileNotFoundException ex){
+            System.out.println("Something is very wrong");
+        }
+    }
+
+    protected void handleSetOceanWords() {
+        words.clear();
+        try{
+            FileReader reader = new FileReader("src/main/resources/com/example/wordsearch/OceanWords.txt");
+            Scanner in = new Scanner(reader);
+
+            while(in.hasNext()){
+                words.add(in.next());
+            }
+
+        } catch (FileNotFoundException ex){
+            System.out.println("Something is very wrong");
+        }
+    }
+
+    protected void handlehackedMode() {
+        hacked = !hacked;
+    }
+
+    protected void handleGetName() {
+        name = nameField.getText();
+    }
 }

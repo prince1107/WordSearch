@@ -4,9 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d41beb2-0490-485c-89de-f381404e1b11" name="Changes" comment="First: Words in">
+    <list default="true" id="0d41beb2-0490-485c-89de-f381404e1b11" name="Changes" comment="Check works, adding more stuff left">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/com/example/wordsearch/OceanWords.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/com/example/wordsearch/SpaceWords.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/com/example/wordsearch/words_alpha.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/com/example/wordsearch/~1000CommonWords.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/wordsearch/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/wordsearch/HelloApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/wordsearch/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/wordsearch/HelloController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/wordsearch/hello-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/wordsearch/hello-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,13 +26,16 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2HY0M2vaGvgt10YY34CfYrWirg6" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
@@ -34,9 +43,17 @@
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/com/example/wordsearch" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.example.wordsearch.HelloApplication" />
@@ -58,7 +75,7 @@
       <workItem from="1668535562903" duration="600000" />
       <workItem from="1668570759931" duration="1435000" />
       <workItem from="1668619591012" duration="848000" />
-      <workItem from="1668655648375" duration="12249000" />
+      <workItem from="1668655648375" duration="36437000" />
     </task>
     <task id="LOCAL-00001" summary="First: Words in">
       <created>1668570911523</created>
@@ -74,7 +91,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668570949754</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Check works, adding more stuff left">
+      <created>1668914855635</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1668914855635</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -92,7 +116,9 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="First: Words in" />
-    <option name="LAST_COMMIT_MESSAGE" value="First: Words in" />
+    <MESSAGE value="Check works, adding more stuff left" />
+    <option name="LAST_COMMIT_MESSAGE" value="Check works, adding more stuff left" />
   </component>
 </project>
