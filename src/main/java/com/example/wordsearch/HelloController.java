@@ -22,17 +22,29 @@ public class HelloController {
 
     @FXML
     private ListView wordsView, leaderboardView;
+    @FXML
     private Button hardModeButton;
+    @FXML
     private Button generalWordsButton;
+    @FXML
     private Button spaceWordsButton;
+    @FXML
     private Button oceanWordsButton;
+    @FXML
     private Button easyModeButton;
+    @FXML
     private Button hackButton;
+    @FXML
     private Label timeLabel;
+    @FXML
     private Label modeLabel;
+    @FXML
     private Label themeLabel;
+    @FXML
     private Button mediumModeButton;
+    @FXML
     private Label nameLabel;
+    @FXML
     private TextField nameField;
 
     private Button[][] btn;
@@ -54,8 +66,8 @@ public class HelloController {
 
     private ArrayList<String> searchWords = new ArrayList<>();
 
-    int length = 10;
-    int height = 10;
+    int length = 12;
+    int height = 12;
 
     private int selectedRow;
     private int selectedColumn;
@@ -73,7 +85,22 @@ public class HelloController {
     int score = 0;
     Timer myTimer = new Timer();
 
-    int time = 0;
+    TimerTask myTimerTask = new TimerTask(){
+        @Override
+        public void run() {
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    timeLabel.setText("Time: " + time + " seconds");
+                }
+            });
+            System.out.println("Time: " + time + " seconds");
+            time++;
+        }
+    };
+
+    int time = -1;
+
+    int timerTimes = 0;
 
     private String name = "player";
 
@@ -95,14 +122,16 @@ public class HelloController {
 
         score = 0;
 
-        time = 0;
-
-        startTimer();
+        if (time == -1){
+            startTimer();
+        } else{
+            time = 0;
+        }
 
         searchWords.clear();
 
-        int length = (int) (10 * mode);
-        int height = (int) (10 * mode);
+        length = (int) (12 * mode);
+        height = (int) (12 * mode);
 
         btn = new Button[length][height];
         board = new String[length][height];
@@ -151,18 +180,8 @@ public class HelloController {
     }
 
     private void startTimer() {
-        myTimer.scheduleAtFixedRate(new TimerTask(){
-            @Override
-            public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        timeLabel.setText("Time: " + time + " seconds");
-                    }
-                });
-                System.out.println("Time: " + time + " seconds");
-                time++;
-            }
-        }, 0, 1000);
+        timerTimes++;
+        myTimer.scheduleAtFixedRate(myTimerTask, 0, 1000 * timerTimes);
     }
 
     private void checkWord(int row, int col) {
@@ -246,7 +265,7 @@ public class HelloController {
 
     private void checkEnd() {
         if (searchWords.size() == 0){
-            myTimer.cancel();
+            myTimer = new Timer();
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date date = new Date();
             score += (500 - time) * 2 * mode;
@@ -543,18 +562,22 @@ public class HelloController {
     }
 
 
+    @FXML
     protected void handleModeHard() {
         mode = 1.5;
     }
 
+    @FXML
     protected void handleModeMedium() {
         mode = 1;
     }
 
+    @FXML
     protected void handleModeEasy() {
         mode = 0.75;
     }
 
+    @FXML
     protected void handleSetGeneralWords() {
         words.clear();
         try{
@@ -570,6 +593,7 @@ public class HelloController {
         }
     }
 
+    @FXML
     protected void handleSetSpaceWords() {
         words.clear();
         try{
@@ -585,6 +609,7 @@ public class HelloController {
         }
     }
 
+    @FXML
     protected void handleSetOceanWords() {
         words.clear();
         try{
@@ -600,10 +625,12 @@ public class HelloController {
         }
     }
 
+    @FXML
     protected void handlehackedMode() {
         hacked = !hacked;
     }
 
+    @FXML
     protected void handleGetName() {
         name = nameField.getText();
     }
