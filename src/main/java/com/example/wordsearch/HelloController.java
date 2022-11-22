@@ -82,19 +82,23 @@ public class HelloController {
 
     boolean hacked = false;
 
+    boolean finished = false;
+
     int score = 0;
     Timer myTimer = new Timer();
 
     TimerTask myTimerTask = new TimerTask(){
         @Override
         public void run() {
-            Platform.runLater(new Runnable() {
-                @Override public void run() {
-                    timeLabel.setText("Time: " + time + " seconds");
-                }
-            });
-            System.out.println("Time: " + time + " seconds");
-            time++;
+            if (!finished) {
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        timeLabel.setText("Time: " + time + " seconds");
+                    }
+                });
+                System.out.println("Time: " + time + " seconds");
+                time++;
+            }
         }
     };
 
@@ -127,6 +131,8 @@ public class HelloController {
         } else{
             time = 0;
         }
+
+        finished = false;
 
         searchWords.clear();
 
@@ -265,7 +271,7 @@ public class HelloController {
 
     private void checkEnd() {
         if (searchWords.size() == 0){
-            myTimer = new Timer();
+            finished = true;
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date date = new Date();
             score += (500 - time) * 2 * mode;
